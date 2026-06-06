@@ -1,0 +1,17 @@
+html
+.DS_Store
+Thumbs.db
+
+# 不公开的工作文件
+.superpowers/
+AGENTS.md
+CLAUDE.md
+
+# 配图工作台（含 Electron 缓存，不公开）
+docs/workbench/
+
+# 压缩包（GitHub 不需要存 zip）
+*.zip
+
+# 开发过程中的中间文件
+docs/archive/
