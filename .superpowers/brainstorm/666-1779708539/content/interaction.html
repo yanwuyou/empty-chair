@@ -1,0 +1,97 @@
+<h2>「和情绪对话」— 交互方式</h2>
+<p class="subtitle">空椅子技术的核心是"先对小怪兽说 → 再换自己坐到椅子上回应"。这个切换怎么在手机屏幕上做？</p>
+
+<div class="cards">
+  <div class="card" data-choice="chat" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(180deg,#FFF8F0,#FFF0E0);min-height:280px;display:flex;align-items:center;justify-content:center;border-radius:16px 16px 0 0;padding:12px;">
+      <div style="width:100%;max-width:320px;">
+        <div style="text-align:center;margin-bottom:12px;font-size:13px;color:#BF8040;font-weight:bold;">小怪兽在椅子上</div>
+        <div style="background:white;border-radius:16px 16px 16px 4px;padding:12px 16px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);font-size:13px;color:#555;">
+          😤 "嘿，我感觉到你很生气。跟我说说发生了什么吧？"
+        </div>
+        <div style="background:#FF8C42;border-radius:16px 16px 4px 16px;padding:12px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);font-size:13px;color:white;margin-left:40px;">
+          同桌把我的笔记本扔到地上，还笑我
+        </div>
+        <div style="text-align:center;margin-bottom:8px;">
+          <div style="display:inline-block;background:#FF8C42;color:white;border-radius:20px;padding:8px 20px;font-size:13px;font-weight:bold;">🪑 换我坐到椅子上</div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:#999;">点击切换视角，用生气的身份回应自己</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · 对话流</h3>
+      <p>像聊天一样自然。小怪兽先说，用户回应，然后点按钮"换椅子"，角色互换继续对话。适合表达能力正常的用户。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>交互自然，用户熟悉</li><li>对话记录可回看</li><li>切换按钮直观</li></ul></div>
+        <div class="cons"><h4>注意</h4><ul><li>对表达力弱的用户有门槛</li><li>需要打字</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="card" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(180deg,#FFF8F0,#FFF0E0);min-height:280px;display:flex;align-items:center;justify-content:center;border-radius:16px 16px 0 0;padding:12px;">
+      <div style="width:100%;max-width:320px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:48px;">😤</div>
+          <div style="font-size:18px;color:#E65100;font-weight:bold;">生气小怪兽</div>
+          <div style="font-size:12px;color:#BF8040;">坐在椅子上等你说话</div>
+        </div>
+        <div style="background:white;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:12px;">
+          <div style="font-size:12px;color:#999;margin-bottom:8px;">📝 你想对小怪兽说什么？</div>
+          <div style="font-size:14px;color:#333;line-height:1.6;">"因为<span style="background:#FFF0E0;padding:2px 6px;border-radius:4px;">同桌扔我笔记本</span>，<br>我感觉<span style="background:#FFF0E0;padding:2px 6px;border-radius:4px;">很生气</span>，<br>我希望<span style="background:#FFF0E0;padding:2px 6px;border-radius:4px;">他能道歉</span>"</div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:#999;">填空式引导，降低表达门槛</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · 填空引导流</h3>
+      <p>不要求自由打字。给句式模板"因为___，我感觉___，我希望___"。用户填关键词即可。专为"不知道怎么说"的用户设计。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>极低表达门槛</li><li>结构化输出</li><li>适合低龄/表达障碍用户</li></ul></div>
+        <div class="cons"><h4>注意</h4><ul><li>自由度受限</li><li>表达能力强的用户可能嫌束缚</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(180deg,#FFF8F0,#FFF0E0);min-height:280px;display:flex;align-items:center;justify-content:center;border-radius:16px 16px 0 0;padding:12px;">
+      <div style="width:100%;max-width:320px;">
+        <div style="text-align:center;margin-bottom:12px;">
+          <div style="font-size:48px;">😤</div>
+          <div style="font-size:14px;color:#BF8040;">你想怎么表达？</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:white;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);border:2px solid #FF8C42;">
+            <div style="font-size:24px;">🎤</div>
+            <div>
+              <div style="font-size:14px;font-weight:bold;color:#333;">语音说说看</div>
+              <div style="font-size:12px;color:#999;">按住说话，像打电话一样</div>
+            </div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+            <div style="font-size:24px;">✍️</div>
+            <div>
+              <div style="font-size:14px;font-weight:bold;color:#333;">打字写下来</div>
+              <div style="font-size:12px;color:#999;">自由表达，想说什么说什么</div>
+            </div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+            <div style="font-size:24px;">📋</div>
+            <div>
+              <div style="font-size:14px;font-weight:bold;color:#333;">用模板填</div>
+              <div style="font-size:12px;color:#999;">不知道怎么开口？跟着提示写</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · 多入口混合流</h3>
+      <p>一个页面给三种表达入口：语音、打字、填空模板。用户按自己的状态选。语音尤其适合情绪上头不想打字的时候。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>覆盖全场景</li><li>语音降低打字情绪门槛</li><li>最包容</li></ul></div>
+        <div class="cons"><h4>注意</h4><ul><li>开发量更大（语音识别）</li><li>入口多可能让用户犹豫</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>空椅子 — 慢慢说出最真实的自己</title>
+<style>
+  :root {
+    --orange: #FF8C42;
+    --orange-dark: #E65100;
+    --orange-light: #BF8040;
+    --purple: #7B1FA2;
+    --blue: #1565C0;
+    --green: #2E7D32;
+    --bg-start: #FFF5EC;
+    --bg-end: #FFECD2;
+    --card-bg: #FFFFFF;
+    --text-primary: #333333;
+    --text-secondary: #999999;
+    --radius: 20px;
+    --shadow: 0 4px 16px rgba(251, 140, 0, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(180deg, var(--bg-start), var(--bg-end));
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 16px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+  }
+
+  .page {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .page.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .btn {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(251, 140, 0, 0.3); }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  /* 首页 */
+  .home-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .home-logo { font-size: 60px; margin-bottom: 8px; }
+  .home-title { font-size: 22px; color: var(--orange-dark); font-weight: bold; }
+  .home-subtitle { font-size: 14px; color: var(--orange-light); margin-top: 6px; }
+
+  .emotion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .emotion-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .emotion-card:active { transform: scale(0.96); }
+
+  .emotion-card .emoji { font-size: 44px; display: block; margin-bottom: 8px; }
+  .emotion-card .name { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+  .emotion-card .desc { font-size: 12px; color: var(--text-secondary); }
+
+  .toggle-positive {
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--orange-light);
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    width: 100%;
+  }
+  .toggle-positive span { color: var(--orange-dark); font-weight: bold; }
+
+  /* 对话页 */
+  .dialogue-monster {
+    text-align: center;
+    margin-bottom: 24px;
+    transition: transform 0.4s ease;
+  }
+  .dialogue-monster .emoji-big {
+    font-size: 72px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .dialogue-monster .monster-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .dialogue-bubble {
+    background: var(--card-bg);
+    border-radius: 16px 16px 16px 4px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.6;
+    width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .dialogue-step-label {
+    font-size: 14px;
+    color: var(--orange-light);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .template-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .template-line {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    font-size: 15px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .template-line .prefix { color: var(--text-secondary); }
+  .template-line .fill {
+    display: inline-block;
+    min-width: 60px;
+    border-bottom: 2px dashed #DDD;
+    padding: 2px 4px;
+    color: var(--text-primary);
+    outline: none;
+  }
+  .template-line .fill:empty::before {
+    content: '_________';
+    color: #CCC;
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .mode-btn {
+    background: rgba(255,255,255,0.7);
+    border: none;
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--orange-light);
+    cursor: pointer;
+  }
+  .mode-btn.active {
+    background: white;
+    color: var(--orange-dark);
+    font-weight: bold;
+    box-shadow: var(--shadow);
+  }
+
+  .free-textarea {
+    width: 100%;
+    min-height: 120px;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 15px;
+    font-family: inherit;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    resize: vertical;
+    outline: none;
+    color: var(--text-primary);
+  }
+  .free-textarea::placeholder { color: #CCC; }
+
+  .submit-btn {
+    margin-top: 24px;
+    align-self: center;
+  }
+
+  /* 完成页 */
+  .star-filled { color: #FFB300; }
+  .star-empty { color: #DDD; }
+
+  /* 历史页 */
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .history-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .history-item {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+  .history-item .hi-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .history-item .hi-emoji { font-size: 32px; }
+  .history-item .hi-meta { flex: 1; }
+  .history-item .hi-name { font-size: 15px; font-weight: bold; }
+  .history-item .hi-date { font-size: 12px; color: var(--text-secondary); }
+  .history-item .hi-stars { font-size: 14px; }
+  .history-item .hi-preview { font-size: 13px; color: #666; line-height: 1.5; }
+
+  .empty-history {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 80px;
+  }
+  .empty-history .empty-icon { font-size: 64px; margin-bottom: 16px; }
+
+  /* 动画 */
+  .emotion-card {
+    animation: fadeInUp 0.4s ease both;
+  }
+  .emotion-card:nth-child(1) { animation-delay: 0.05s; }
+  .emotion-card:nth-child(2) { animation-delay: 0.1s; }
+  .emotion-card:nth-child(3) { animation-delay: 0.15s; }
+  .emotion-card:nth-child(4) { animation-delay: 0.2s; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  #starRating span {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  #starRating span:active {
+    transform: scale(1.3);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="page-home" class="page active">
+    <div class="home-header">
+      <div class="home-logo">🪑</div>
+      <div class="home-title">空椅子</div>
+      <div class="home-subtitle">选一只小怪兽，陪你说说话</div>
+    </div>
+    <div id="emotionGrid" class="emotion-grid"></div>
+    <button id="togglePositive" class="toggle-positive" onclick="toggleEmotions()">
+      今天感觉还不错？<span>看看开心小怪兽 →</span>
+    </button>
+  </div>
+  <div id="page-dialogue" class="page">
+    <div id="dialogueMonster" class="dialogue-monster"></div>
+    <div id="dialogueBubble" class="dialogue-bubble"></div>
+    <div id="dialogueBody"></div>
+  </div>
+  <div id="page-complete" class="page"></div>
+  <div id="page-history" class="page">
+    <div class="history-header">
+      <button class="back-btn" onclick="showPage('home')">←</button>
+      <div style="font-size:18px;font-weight:bold;color:var(--orange-dark);">历史记录</div>
+      <div style="width:40px;"></div>
+    </div>
+    <div id="historyList" class="history-list"></div>
+  </div>
+</div>
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  const EMOTIONS = {
+    negative: [
+      { id: 'angry', icon: '😤', name: '生气', desc: '心里有火', color: '#E65100', tag: 'negative' },
+      { id: 'worried', icon: '😰', name: '担心', desc: '心里不踏实', color: '#7B1FA2', tag: 'negative' },
+      { id: 'sad', icon: '😢', name: '难过', desc: '想哭一会儿', color: '#1565C0', tag: 'negative' },
+      { id: 'nervous', icon: '😨', name: '紧张', desc: '手心冒汗', color: '#2E7D32', tag: 'negative' }
+    ],
+    positive: [
+      { id: 'happy', icon: '😊', name: '开心', desc: '嘴角上扬', color: '#E65100', tag: 'positive' },
+      { id: 'brave', icon: '🦁', name: '勇敢', desc: '迈出一步', color: '#7B1FA2', tag: 'positive' },
+      { id: 'proud', icon: '🌟', name: '自豪', desc: '我做到了', color: '#1565C0', tag: 'positive' },
+      { id: 'excited', icon: '🔭', name: '期待', desc: '等不及了', color: '#2E7D32', tag: 'positive' }
+    ]
+  };
+
+  const PHRASES = {
+    angry: {
+      opening: '嘿，我感觉到你很生气。跟我说说发生了什么吧？',
+      listening: '不着急，把那股火说出来——因为什么？',
+      switchChair: '现在换你坐到椅子上。如果你就是这股生气，你会对自己说什么？'
+    },
+    worried: {
+      opening: '我在听。你心里不踏实的东西，说出来给自己听听。',
+      listening: '慢慢说，你担心的事，有名字了吗？',
+      switchChair: '现在换你坐到椅子上。听了这些担心，你会怎么安慰自己？'
+    },
+    sad: {
+      opening: '没关系的，我在这里。你想到了什么？',
+      listening: '让它流出来。你为什么会难过？',
+      switchChair: '现在换你坐到椅子上。看着难过的自己，你想说什么？'
+    },
+    nervous: {
+      opening: '深呼吸。你在紧张什么呢？说出来会好一点。',
+      listening: '慢慢说，手心出了汗也没关系。',
+      switchChair: '现在换你坐到椅子上。冷静地看那个紧张的你，你会怎么安抚他？'
+    },
+    happy: {
+      opening: '笑容会传染！跟我说说，什么让你这么开心？',
+      listening: '尽情说，快乐的细节都值得被记住。',
+      switchChair: '现在换你坐到椅子上。记住这份开心——它来自哪里？你想提醒自己什么？'
+    },
+    brave: {
+      opening: '你迈出了一步。跟我说说，你做了什么？',
+      listening: '勇敢不等于不害怕。你越过的是什么？',
+      switchChair: '现在换你坐到椅子上。看着勇敢的自己，你想给他什么力量？'
+    },
+    proud: {
+      opening: '你做到了！那份骄傲想让你说出什么？',
+      listening: '不是炫耀，是告诉自己——我配得上这一刻。',
+      switchChair: '现在换你坐到椅子上。这份自豪，会怎么鼓励未来的你？'
+    },
+    excited: {
+      opening: '有期待真好。你等不及想去做什么？',
+      listening: '想象它到来那一刻——你看见了什么？',
+      switchChair: '现在换你坐到椅子上。面对这份期待，你提醒自己别忘了什么？'
+    }
+  };
+
+  let showingPositive = false;
+
+  function renderEmotions() {
+    const grid = document.getElementById('emotionGrid');
+    const list = showingPositive ? EMOTIONS.positive : EMOTIONS.negative;
+    grid.innerHTML = list.map(e => `
+      <div class="emotion-card" onclick="selectEmotion('${e.id}')" style="box-shadow: 0 4px 16px ${e.color}15;">
+        <span class="emoji">${e.icon}</span>
+        <div class="name" style="color:${e.color}">${e.name}</div>
+        <div class="desc">${e.desc}</div>
+      </div>
+    `).join('');
+  }
+
+  function toggleEmotions() {
+    showingPositive = !showingPositive;
+    renderEmotions();
+    const btn = document.getElementById('togglePositive');
+    btn.innerHTML = showingPositive
+      ? '<span>← 回不开心小怪兽</span>'
+      : '今天感觉还不错？<span>看看开心小怪兽 →</span>';
+  }
+
+  let currentEmotion = null;
+  let dialogueStep = 0;
+  let currentMode = 'template';
+
+  function selectEmotion(emotionId) {
+    const all = [...EMOTIONS.negative, ...EMOTIONS.positive];
+    currentEmotion = all.find(e => e.id === emotionId);
+    dialogueStep = 0;
+    renderDialogueStep();
+    showPage('dialogue');
+  }
+
+  function renderDialogueStep() {
+    const monster = document.getElementById('dialogueMonster');
+    const bubble = document.getElementById('dialogueBubble');
+    const body = document.getElementById('dialogueBody');
+    const p = PHRASES[currentEmotion.id];
+
+    monster.innerHTML = `
+      <span class="emoji-big">${currentEmotion.icon}</span>
+      <div class="monster-name" style="color:${currentEmotion.color}">${currentEmotion.name}小怪兽</div>
+    `;
+    monster.style.transform = 'translateX(0)';
+
+    if (dialogueStep === 0) {
+      bubble.textContent = p.opening;
+      body.innerHTML = `
+        <div class="dialogue-step-label">你想对小怪兽说什么？</div>
+        <div id="expressionForm"></div>
+        <div class="mode-toggle">
+          <button class="mode-btn active" onclick="setMode('template')">📋 用模板填</button>
+          <button class="mode-btn" onclick="setMode('free')">✍️ 自己写</button>
+        </div>
+        <button class="btn submit-btn" onclick="submitExpression()">说好了</button>
+      `;
+      currentMode = 'template';
+      renderTemplateForm();
+    }
+  }
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('#dialogueBody .mode-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    const form = document.getElementById('expressionForm');
+    if (mode === 'template') {
+      renderTemplateForm();
+    } else {
+      form.innerHTML = `<textarea class="free-textarea" id="freeText" placeholder="想说什么都可以……不着急，慢慢说。"></textarea>`;
+    }
+  }
+
+  function renderTemplateForm() {
+    const p = PHRASES[currentEmotion.id];
+    document.getElementById('expressionForm').innerHTML = `
+      <div class="template-form">
+        <div class="template-line"><span class="prefix">因为 </span><span class="fill" contenteditable="true" id="fillBecause"></span></div>
+        <div class="template-line"><span class="prefix">我感觉 </span><span class="fill" contenteditable="true" id="fillFeel"></span></div>
+        <div class="template-line"><span class="prefix">我希望 </span><span class="fill" contenteditable="true" id="fillHope"></span></div>
+      </div>
+      <div style="text-align:center;margin-top:8px;font-size:13px;color:var(--orange-light);">${p.listening}</div>
+    `;
+  }
+
+  let expressionData = null;
+  let responseMode = 'template';
+
+  function submitExpression() {
+    const p = PHRASES[currentEmotion.id];
+    if (currentMode === 'template') {
+      const because = document.getElementById('fillBecause')?.textContent?.trim() || '';
+      const feel = document.getElementById('fillFeel')?.textContent?.trim() || '';
+      const hope = document.getElementById('fillHope')?.textContent?.trim() || '';
+      if (!because && !feel && !hope) return;
+      expressionData = { because, feel, hope, freeText: null };
+    } else {
+      const text = document.getElementById('freeText')?.value?.trim() || '';
+      if (!text) return;
+      expressionData = { because: text, feel: '', hope: '', freeText: text };
+    }
+
+    dialogueStep = 2;
+    const monster = document.getElementById('dialogueMonster');
+    const bubble = document.getElementById('dialogueBubble');
+    const body = document.getElementById('dialogueBody');
+
+    monster.style.transform = 'translateX(60px)';
+
+    bubble.textContent = p.switchChair;
+
+    body.innerHTML = `
+      <div id="responseForm"></div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setResponseMode('template')">📋 用模板</button>
+        <button class="mode-btn" onclick="setResponseMode('free')">✍️ 自己写</button>
+      </div>
+      <button class="btn submit-btn" onclick="submitResponse()">说好了</button>
+    `;
+    responseMode = 'template';
+    renderResponseTemplate();
+  }
+
+  function setResponseMode(mode) {
+    responseMode = mode;
+    document.querySelectorAll('#dialogueBody .mode-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    if (mode === 'template') renderResponseTemplate();
+    else document.getElementById('responseForm').innerHTML = `<textarea class="free-textarea" id="responseFreeText" placeholder="你想对自己说什么？"></textarea>`;
+  }
+
+  function renderResponseTemplate() {
+    document.getElementById('responseForm').innerHTML = `
+      <div class="template-line"><span class="prefix">我想对自己说 </span><span class="fill" contenteditable="true" id="fillResponse"></span></div>
+    `;
+  }
+
+  let responseData = null;
+
+  const STORAGE_KEY = 'empty_chair_history';
+
+  function getHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function saveToHistory() {
+    const history = getHistory();
+    history.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      emotionId: currentEmotion.id,
+      emotionName: currentEmotion.name,
+      emotionIcon: currentEmotion.icon,
+      emotionColor: currentEmotion.color,
+      date: new Date().toISOString(),
+      expression: expressionData,
+      response: responseData,
+      stars: 0
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  }
+
+  function updateLastHistoryStars(n) {
+    const history = getHistory();
+    if (history.length > 0) {
+      history[0].stars = n;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    }
+  }
+
+  function showHistory() {
+    const list = document.getElementById('historyList');
+    const history = getHistory();
+    if (history.length === 0) {
+      list.innerHTML = `
+        <div class="empty-history">
+          <div class="empty-icon">🪑</div>
+          <div>还没有对话记录</div>
+          <button class="btn" style="margin-top:16px;" onclick="showPage('home')">去说说话</button>
+        </div>
+      `;
+    } else {
+      list.innerHTML = history.map(h => {
+        const d = new Date(h.date);
+        const dateStr = `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const preview = h.expression.because || h.expression.freeText || '';
+        const stars = '★'.repeat(h.stars) + '☆'.repeat(3 - h.stars);
+        return `
+          <div class="history-item" onclick="showHistoryDetail('${h.id}')">
+            <div class="hi-header">
+              <span class="hi-emoji">${h.emotionIcon}</span>
+              <div class="hi-meta">
+                <div class="hi-name" style="color:${h.emotionColor}">${h.emotionName}小怪兽</div>
+                <div class="hi-date">${dateStr}</div>
+              </div>
+              <div class="hi-stars" style="color:#FFB300;">${stars}</div>
+            </div>
+            <div class="hi-preview">${preview.slice(0, 50)}${preview.length > 50 ? '...' : ''}</div>
+          </div>
+        `;
+      }).join('');
+    }
+    showPage('history');
+  }
+
+  function showHistoryDetail(id) {
+    const history = getHistory();
+    const h = history.find(item => item.id === id);
+    if (!h) return;
+    const d = new Date(h.date);
+    const dateStr = `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const expressionText = h.expression.freeText
+      || `因为 ${h.expression.because}，我感觉 ${h.expression.feel}，我希望 ${h.expression.hope}`;
+    const responseText = h.response.text;
+    const stars = '★'.repeat(h.stars) + '☆'.repeat(3 - h.stars);
+
+    document.getElementById('page-complete').innerHTML = `
+      <div style="text-align:center;width:100%;">
+        <button class="back-btn" onclick="showHistory()" style="align-self:flex-start;">← 返回</button>
+        <div style="font-size:64px;margin:16px 0;">${h.emotionIcon}</div>
+        <div class="home-title">${h.emotionName}小怪兽</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin:8px 0;">${dateStr}</div>
+        <div style="font-size:24px;color:#FFB300;margin:8px 0;">${stars}</div>
+        <div class="card" style="width:100%;text-align:left;margin-top:16px;">
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">你的表达</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--text-primary);">${expressionText}</div>
+        </div>
+        <div class="card" style="width:100%;text-align:left;margin-top:12px;">
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">坐在椅子上的回应</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--text-primary);">${responseText}</div>
+        </div>
+        <button class="btn" style="margin-top:24px;" onclick="resetAndGoHome()">再来一次</button>
+      </div>
+    `;
+    showPage('complete');
+  }
+
+  function submitResponse() {
+    if (responseMode === 'template') {
+      const text = document.getElementById('fillResponse')?.textContent?.trim() || '';
+      if (!text) return;
+      responseData = { text, freeText: null };
+    } else {
+      const text = document.getElementById('responseFreeText')?.value?.trim() || '';
+      if (!text) return;
+      responseData = { text, freeText: text };
+    }
+
+    saveToHistory();
+    renderCompletePage();
+    showPage('complete');
+  }
+
+  function renderCompletePage() {
+    const keyword = expressionData.because || expressionData.freeText || '你心里的事';
+    document.getElementById('page-complete').innerHTML = `
+      <div style="text-align:center;">
+        <div style="font-size:72px;">${currentEmotion.icon}</div>
+        <div class="home-title" style="margin-top:8px;">你换了一个角度看自己</div>
+        <div class="dialogue-bubble" style="text-align:center;margin-top:16px;">
+          刚才，你坐在<strong style="color:${currentEmotion.color}">${currentEmotion.name}</strong>的位置上，<br>给自己说了一句话
+        </div>
+        <div style="margin:24px 0;">
+          <div style="font-size:14px;color:var(--orange-light);margin-bottom:12px;">这次换位对你有启发吗？</div>
+          <div id="starRating" style="font-size:44px;cursor:pointer;letter-spacing:4px;">
+            <span onclick="rateStars(1)" style="color:#DDD;">☆</span>
+            <span onclick="rateStars(2)" style="color:#DDD;">☆</span>
+            <span onclick="rateStars(3)" style="color:#DDD;">☆</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button class="btn" onclick="resetAndGoHome()">再来一次</button>
+          <button class="btn" style="background:white;color:var(--orange-dark);box-shadow:var(--shadow);" onclick="showHistory()">看看记录</button>
+        </div>
+      </div>
+    `;
+    window._starSelected = 0;
+  }
+
+  function rateStars(n) {
+    window._starSelected = n;
+    const container = document.getElementById('starRating');
+    container.innerHTML = '';
+    for (let i = 1; i <= 3; i++) {
+      const span = document.createElement('span');
+      span.textContent = i <= n ? '★' : '☆';
+      span.style.color = i <= n ? '#FFB300' : '#DDD';
+      span.style.cursor = 'pointer';
+      span.style.display = 'inline-block';
+      span.style.transition = 'transform 0.2s ease';
+      span.onclick = () => rateStars(i);
+      container.appendChild(span);
+    }
+    updateLastHistoryStars(n);
+  }
+
+  function resetAndGoHome() {
+    currentEmotion = null;
+    expressionData = null;
+    responseData = null;
+    dialogueStep = 0;
+    showingPositive = false;
+    renderEmotions();
+    document.getElementById('togglePositive').innerHTML = '今天感觉还不错？<span>看看开心小怪兽 →</span>';
+    showPage('home');
+  }
+
+  renderEmotions();
+</script>
+</body>
+</html>

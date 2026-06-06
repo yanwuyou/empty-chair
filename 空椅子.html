@@ -1,0 +1,1741 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>空椅子｜给自己一段不被打断的对话</title>
+<meta name="description" content="空椅子——基于格式塔疗法空椅子技术设计的轻量自我表达工具。选择一个感受，把心里的话说出来，再换到对面椅子上回应自己。单HTML文件，双击即可使用，对话不上传。焱无忧 AI 手作出品。">
+<meta name="keywords" content="空椅子,空椅子技术,格式塔疗法,自我对话,情绪整理,心理健康,自我表达,HTML工具,焱无忧AI手作">
+<meta name="author" content="焱无忧的AI手作">
+<meta property="og:title" content="空椅子｜给自己一段不被打断的对话">
+<meta property="og:description" content="基于格式塔疗法空椅子技术，给自己一段安静的表达、换位与回应。下载双击即可使用。">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --ink: #342d29;
+    --muted: #7b6f68;
+    --soft: #a79a91;
+    --paper: #fffdf9;
+    --canvas: #f5eee5;
+    --canvas-deep: #eadccf;
+    --line: #e5d7c9;
+    --accent: #c96a3d;
+    --accent-deep: #924b2e;
+    --accent-soft: #f5dfd0;
+    --sage: #6f8976;
+    --sage-soft: #e5eee7;
+    --danger: #a7463f;
+    --shadow: 0 18px 48px rgba(74, 49, 34, 0.10);
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { min-width: 320px; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 8% 10%, rgba(201, 106, 61, 0.10), transparent 32%),
+      radial-gradient(circle at 92% 90%, rgba(111, 137, 118, 0.12), transparent 34%),
+      var(--canvas);
+    font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  }
+
+  button, textarea, input { font: inherit; }
+  button { cursor: pointer; }
+
+  .app {
+    width: min(1180px, calc(100% - 40px));
+    min-height: calc(100vh - 40px);
+    margin: 20px auto;
+    overflow: hidden;
+    background: rgba(255, 253, 249, 0.94);
+    border: 1px solid rgba(229, 215, 201, 0.9);
+    border-radius: 32px;
+    box-shadow: var(--shadow);
+  }
+
+  .page { display: none; min-height: calc(100vh - 40px); }
+  .page.active { display: block; animation: page-in 260ms ease both; }
+
+  .home-layout {
+    display: grid;
+    grid-template-columns: minmax(330px, 0.86fr) minmax(520px, 1.45fr);
+    min-height: calc(100vh - 40px);
+  }
+
+  .intro-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 48px;
+    overflow: hidden;
+    background: #3b312c;
+    color: #fffaf5;
+  }
+
+  .intro-panel::before,
+  .intro-panel::after {
+    content: "";
+    position: absolute;
+    border: 1px solid rgba(255, 250, 245, 0.11);
+    border-radius: 50%;
+  }
+
+  .intro-panel::before { width: 360px; height: 360px; right: -190px; top: -170px; }
+  .intro-panel::after { width: 250px; height: 250px; left: -160px; bottom: -110px; }
+
+  .brand, .intro-copy, .theory-card, .maker-mini, .intro-footer { position: relative; z-index: 1; }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .brand-chair {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    color: #3b312c;
+    background: #f1c7a9;
+    font-size: 23px;
+  }
+
+  .brand-name { white-space: nowrap; }
+
+  .maker-pill {
+    padding: 6px 10px;
+    border: 1px solid rgba(241, 199, 169, 0.28);
+    border-radius: 999px;
+    color: #f1c7a9;
+    background: rgba(241, 199, 169, 0.08);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .version {
+    margin-left: auto;
+    color: rgba(255, 250, 245, 0.48);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+  }
+
+  .intro-copy { margin: auto 0 30px; }
+  .eyebrow { margin: 0 0 12px; color: #e7b58f; font-size: 13px; letter-spacing: 0.16em; }
+
+  .intro-copy h1 {
+    max-width: 430px;
+    margin: 0;
+    font-family: "STSong", "SimSun", serif;
+    font-size: clamp(40px, 5vw, 62px);
+    font-weight: 400;
+    line-height: 1.22;
+    letter-spacing: 0.03em;
+  }
+
+  .intro-copy p {
+    max-width: 420px;
+    margin: 22px 0 0;
+    color: rgba(255, 250, 245, 0.72);
+    font-size: 15px;
+    line-height: 1.9;
+  }
+
+  .theory-card {
+    padding: 18px 20px;
+    border: 1px solid rgba(255, 250, 245, 0.13);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .theory-card strong { display: block; margin-bottom: 8px; color: #f1c7a9; font-size: 14px; }
+  .theory-card p { margin: 0; color: rgba(255, 250, 245, 0.70); font-size: 13px; line-height: 1.7; }
+
+  .maker-mini {
+    display: grid;
+    grid-template-columns: 1fr 86px;
+    gap: 14px;
+    align-items: center;
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid rgba(255, 250, 245, 0.14);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .maker-mini p {
+    margin: 0 0 6px;
+    color: #f1c7a9;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .maker-mini strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #fffaf5;
+  }
+
+  .maker-mini span {
+    display: block;
+    color: rgba(255, 250, 245, 0.62);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .maker-mini img {
+    width: 86px;
+    height: 86px;
+    padding: 6px;
+    border-radius: 14px;
+    background: #fffaf5;
+    object-fit: cover;
+  }
+
+  .intro-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+    color: rgba(255, 250, 245, 0.52);
+    font-size: 12px;
+  }
+
+  .intro-footer span { display: inline-flex; align-items: center; gap: 5px; }
+
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    padding: 42px 48px 34px;
+  }
+
+  .workspace-head,
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .workspace-head h2, .page-head h2 { margin: 0; font-size: 25px; }
+  .workspace-head p, .page-head p { margin: 7px 0 0; color: var(--muted); font-size: 14px; }
+  .head-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+  .ghost-btn, .text-btn, .tab-btn, .icon-btn {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--muted);
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease, transform 160ms ease;
+  }
+
+  .ghost-btn:hover, .text-btn:hover, .tab-btn:hover, .icon-btn:hover {
+    border-color: #cfb9a7;
+    color: var(--accent-deep);
+    background: #fff8f2;
+  }
+
+  .ghost-btn {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+  }
+
+  .emotion-tabs {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 6px;
+    margin: 30px 0 20px;
+    padding: 5px;
+    border-radius: 999px;
+    background: #f1e8de;
+  }
+
+  .tab-btn {
+    min-height: 38px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .tab-btn.active {
+    color: var(--accent-deep);
+    background: var(--paper);
+    box-shadow: 0 4px 14px rgba(74, 49, 34, 0.08);
+  }
+
+  .emotion-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .emotion-card {
+    position: relative;
+    min-height: 144px;
+    padding: 20px;
+    overflow: hidden;
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+    color: var(--ink);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .emotion-card::after {
+    content: "";
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    right: -28px;
+    bottom: -35px;
+    border-radius: 50%;
+    background: var(--emotion-soft);
+  }
+
+  .emotion-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--emotion);
+    box-shadow: 0 14px 28px rgba(74, 49, 34, 0.10);
+  }
+
+  .emotion-card.custom-emotion-card {
+    grid-column: 1 / -1;
+    min-height: 82px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    border-style: dashed;
+    background: #faf6f1;
+  }
+
+  .emotion-card.custom-emotion-card .emotion-icon { margin: 0; }
+  .emotion-card.custom-emotion-card .emotion-desc { margin-top: 4px; }
+  .custom-emotion-arrow { color: var(--soft); font-size: 22px; }
+
+  .emotion-icon { display: block; margin-bottom: 15px; font-size: 38px; }
+  .emotion-name { display: block; color: var(--emotion); font-size: 17px; font-weight: 700; }
+  .emotion-desc { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+
+  .promise-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 22px;
+  }
+
+  .promise {
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .promise strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 13px; }
+
+  .inner-page { padding: 30px 38px 34px; }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    color: var(--muted);
+    background: #f3ebe3;
+  }
+
+  .back-btn:hover { color: var(--accent-deep); }
+
+  .stepper { display: flex; align-items: center; gap: 8px; }
+
+  .step-dot {
+    display: grid;
+    place-items: center;
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    color: var(--soft);
+    background: #f1e8de;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .step-dot.active { color: #fff; background: var(--accent); }
+  .step-line { width: 38px; height: 1px; background: var(--line); }
+
+  .dialogue-layout {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.9fr) minmax(440px, 1.1fr);
+    gap: 30px;
+    margin-top: 28px;
+  }
+
+  .chair-room {
+    position: relative;
+    min-height: 590px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.60), rgba(255,255,255,0)),
+      #efe4d8;
+  }
+
+  .chair-room::before {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    bottom: 122px;
+    height: 1px;
+    background: #dac8b7;
+  }
+
+  .room-note {
+    position: absolute;
+    top: 26px;
+    left: 28px;
+    right: 28px;
+    color: var(--muted);
+    font-family: "STSong", "SimSun", serif;
+    font-size: 20px;
+    line-height: 1.55;
+  }
+
+  .chairs { position: absolute; inset: 130px 20px 30px; }
+
+  .chair-spot {
+    position: absolute;
+    bottom: 40px;
+    width: 42%;
+    text-align: center;
+    color: var(--soft);
+    transition: opacity 220ms ease, transform 360ms ease;
+  }
+
+  .chair-spot.left { left: 3%; }
+  .chair-spot.right { right: 3%; }
+  .chair-spot.active { color: var(--accent-deep); transform: translateY(-8px); }
+
+  .monster {
+    min-height: 92px;
+    opacity: 0.18;
+    transform: scale(0.78);
+    transition: opacity 300ms ease, transform 400ms ease;
+  }
+
+  .chair-spot.active .monster { opacity: 1; transform: scale(1); }
+  .monster-icon { display: block; font-size: 62px; }
+  .monster-name { display: block; margin-top: 6px; font-size: 13px; font-weight: 700; }
+  .chair-icon { display: block; margin-top: 12px; font-size: 82px; filter: sepia(0.25); }
+  .chair-label { display: block; margin-top: 7px; font-size: 12px; }
+
+  .form-panel {
+    min-height: 590px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+  }
+
+  .form-kicker { margin: 0 0 7px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; }
+  .form-panel h3 { margin: 0; font-family: "STSong", "SimSun", serif; font-size: 29px; font-weight: 400; line-height: 1.4; }
+  .form-guide { margin: 12px 0 22px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+
+  .mode-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .mode-tabs .tab-btn { border: 1px solid var(--line); background: #faf5ef; }
+  .mode-tabs .tab-btn.active { border-color: #dcb99f; background: var(--accent-soft); }
+
+  .template-fields { display: grid; gap: 12px; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    align-items: start;
+    gap: 10px;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: #fffaf5;
+  }
+
+  .field-row label { padding-top: 8px; color: var(--muted); font-size: 13px; }
+
+  .field-row textarea,
+  .free-textarea {
+    width: 100%;
+    min-height: 54px;
+    padding: 7px 8px;
+    resize: vertical;
+    border: 0;
+    outline: 0;
+    color: var(--ink);
+    background: transparent;
+    line-height: 1.65;
+  }
+
+  .free-textarea {
+    min-height: 230px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: #fffaf5;
+  }
+
+  textarea:focus { box-shadow: inset 0 0 0 2px rgba(201, 106, 61, 0.22); }
+  textarea::placeholder { color: #b9aea6; }
+
+  .recap {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--muted);
+    background: #faf5ef;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .form-status {
+    min-height: 22px;
+    margin-top: 12px;
+    color: var(--danger);
+    font-size: 13px;
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .primary-btn {
+    min-height: 46px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--accent);
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(201, 106, 61, 0.20);
+    transition: transform 160ms ease, background 160ms ease;
+  }
+
+  .primary-btn:hover { background: var(--accent-deep); transform: translateY(-1px); }
+  .primary-btn:active { transform: translateY(1px); }
+
+  .text-btn {
+    min-height: 42px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+  }
+
+  .complete-layout {
+    display: grid;
+    grid-template-columns: minmax(340px, 0.8fr) minmax(460px, 1.2fr);
+    gap: 28px;
+    margin-top: 28px;
+  }
+
+  .complete-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 500px;
+    padding: 44px;
+    border-radius: var(--radius-lg);
+    color: #fffaf5;
+    background: #3b312c;
+  }
+
+  .complete-icon { font-size: 68px; }
+  .complete-hero h3 { margin: 20px 0 12px; font-family: "STSong", "SimSun", serif; font-size: 36px; font-weight: 400; }
+  .complete-hero p { margin: 0; color: rgba(255,250,245,0.68); line-height: 1.8; }
+
+  .complete-card {
+    min-height: 500px;
+    padding: 34px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+  }
+
+  .quote-label { color: var(--muted); font-size: 12px; letter-spacing: 0.08em; }
+  .response-quote { margin: 12px 0 26px; font-family: "STSong", "SimSun", serif; font-size: 24px; line-height: 1.7; }
+
+  .rating { padding-top: 22px; border-top: 1px solid var(--line); }
+  .rating p { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .stars { display: flex; gap: 8px; }
+
+  .star-btn {
+    padding: 0;
+    border: 0;
+    color: #d8ccc0;
+    background: transparent;
+    font-size: 36px;
+  }
+
+  .star-btn.selected { color: #d79937; }
+
+  .complete-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+
+  .history-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.75fr) minmax(440px, 1.25fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .history-list {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    max-height: calc(100vh - 190px);
+    overflow: auto;
+    padding-right: 6px;
+  }
+
+  .history-item {
+    padding: 16px;
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  .history-item.active { border-color: #d6aa8b; background: #fff8f2; }
+  .history-item-head { display: flex; align-items: center; gap: 10px; }
+  .history-item-icon { font-size: 28px; }
+  .history-item-name { font-weight: 700; }
+  .history-item-date { margin-left: auto; color: var(--soft); font-size: 11px; }
+  .history-preview { margin-top: 10px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+  .history-detail {
+    min-height: 480px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+  }
+
+  .detail-empty { display: grid; place-items: center; min-height: 420px; color: var(--muted); text-align: center; }
+  .detail-head { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .detail-icon { font-size: 42px; }
+  .detail-name { font-size: 18px; font-weight: 700; }
+  .detail-date { margin-top: 4px; color: var(--soft); font-size: 12px; }
+  .detail-stars { margin-left: auto; color: #d79937; }
+
+  .detail-block { margin-top: 22px; }
+  .detail-block span { color: var(--muted); font-size: 12px; }
+  .detail-block p { margin: 8px 0 0; line-height: 1.8; white-space: pre-wrap; }
+  .detail-actions { display: flex; gap: 10px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
+
+  .danger-btn { color: var(--danger); }
+  .danger-btn:hover { color: #fff; background: var(--danger); }
+
+  .safety-note {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border: 1px solid #e3d4c7;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    background: #faf5ef;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .safety-note strong { color: var(--ink); }
+
+  .notice {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    z-index: 10;
+    min-width: 240px;
+    max-width: calc(100% - 32px);
+    padding: 12px 18px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 16px);
+    border-radius: 999px;
+    color: #fff;
+    background: #3b312c;
+    font-size: 13px;
+    text-align: center;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .notice.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    place-items: center;
+    padding: 24px;
+    background: rgba(43, 35, 31, 0.58);
+    backdrop-filter: blur(8px);
+  }
+
+  .modal-backdrop.open { display: grid; animation: page-in 180ms ease both; }
+
+  .modal {
+    width: min(780px, 100%);
+    max-height: min(760px, calc(100vh - 48px));
+    overflow: auto;
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    box-shadow: 0 24px 70px rgba(43, 35, 31, 0.24);
+  }
+
+  .modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .modal-head h2 { margin: 0; font-family: "STSong", "SimSun", serif; font-size: 32px; font-weight: 400; }
+  .modal-head p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+  .icon-btn {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 20px;
+  }
+
+  .custom-emotion-modal { width: min(520px, 100%); }
+
+  .custom-emotion-form { margin-top: 24px; }
+
+  .custom-emotion-form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .custom-emotion-form input {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    outline: none;
+    color: var(--ink);
+    background: #fffaf5;
+  }
+
+  .custom-emotion-form input:focus {
+    border-color: #d2a07e;
+    box-shadow: 0 0 0 3px rgba(201, 106, 61, 0.10);
+  }
+
+  .custom-emotion-examples {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .custom-emotion-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .theory-intro { margin: 24px 0; color: var(--ink); font-family: "STSong", "SimSun", serif; font-size: 21px; line-height: 1.8; }
+
+  .theory-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .theory-step {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: #fffaf5;
+  }
+
+  .theory-step span { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; }
+  .theory-step strong { display: block; margin: 10px 0 7px; }
+  .theory-step p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+  .boundary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .boundary-card {
+    padding: 18px;
+    border-radius: var(--radius-md);
+    color: var(--muted);
+    background: var(--sage-soft);
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .boundary-card.warning { background: #f5e6e2; }
+  .boundary-card strong { display: block; margin-bottom: 7px; color: var(--ink); }
+
+  .privacy-list {
+    margin: 24px 0 0;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    color: var(--muted);
+    background: #faf5ef;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .privacy-list strong { color: var(--ink); }
+
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .app { width: 100%; min-height: 100vh; margin: 0; border: 0; border-radius: 0; }
+    .page { min-height: 100vh; }
+    .home-layout, .dialogue-layout, .complete-layout, .history-layout { grid-template-columns: 1fr; }
+    .intro-panel { min-height: auto; padding: 34px 26px; }
+    .intro-copy { margin: 58px 0 26px; }
+    .theory-card, .intro-footer { display: none; }
+    .maker-mini { max-width: 420px; }
+    .workspace, .inner-page { padding: 28px 20px; }
+    .chair-room { min-height: 380px; }
+    .form-panel { min-height: auto; }
+    .history-list { max-height: none; }
+  }
+
+  @media (max-width: 560px) {
+    .emotion-grid, .promise-row { grid-template-columns: 1fr; }
+    .emotion-card.custom-emotion-card { grid-column: auto; }
+    .workspace-head, .page-head { align-items: flex-start; }
+    .page-head { flex-wrap: wrap; }
+    .emotion-card { min-height: 116px; }
+    .form-panel, .complete-card, .complete-hero, .history-detail { padding: 22px; }
+    .field-row { grid-template-columns: 1fr; gap: 2px; }
+    .field-row label { padding-top: 0; }
+    .theory-steps, .boundary-grid { grid-template-columns: 1fr; }
+    .modal { padding: 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="page-home" class="page active">
+    <div class="home-layout">
+      <aside class="intro-panel">
+        <div class="brand">
+          <span class="brand-chair">🪑</span>
+          <span class="brand-name">空椅子</span>
+          <span class="maker-pill">焱无忧的AI手作</span>
+          <span class="version">DESKTOP · v1.3</span>
+        </div>
+
+        <div class="intro-copy">
+          <p class="eyebrow">A QUIET CONVERSATION WITH YOURSELF</p>
+          <h1>给自己一段<br>不被打断的对话</h1>
+          <p>先把心里的话说出来，再换到对面的椅子上，试着回应刚才的自己。这里不追问、不评判，也不催促。</p>
+        </div>
+
+        <div class="theory-card">
+          <strong>什么是空椅子练习？</strong>
+          <p>它源自格式塔疗法：面对一把想象中的空椅子表达感受，再通过角色互换，从另一个位置重新看见自己。本工具只保留“表达、换位、回应”的轻量练习过程。</p>
+        </div>
+
+        <div class="maker-mini" aria-label="焱无忧的AI手作公众号信息">
+          <div>
+            <p>YANWUYOU AI HANDMADE</p>
+            <strong>公众号：焱无忧的AI手作</strong>
+            <span>扫码关注，获取新版工具、使用说明和创作笔记。</span>
+          </div>
+          <img src="data:image/jpeg;base64,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" alt="焱无忧的AI手作公众号二维码">
+        </div>
+
+        <div class="intro-footer">
+          <span>● 无需登录</span>
+          <span>● 不上传内容</span>
+          <span>● 记录仅存本机浏览器</span>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="workspace-head">
+          <div>
+            <h2>此刻，哪种感受更接近你？</h2>
+            <p>不必判断对错，只选一个最接近的开始。</p>
+          </div>
+          <div class="head-actions">
+            <button class="ghost-btn" type="button" onclick="openTheory()">了解空椅子</button>
+            <button class="ghost-btn" type="button" onclick="showHistory()">查看我的记录 <span id="historyCount"></span></button>
+          </div>
+        </header>
+
+        <div class="emotion-tabs" role="tablist" aria-label="情绪分类">
+          <button id="tabNegative" class="tab-btn active" type="button" role="tab" aria-selected="true" onclick="setEmotionGroup('negative', this)">需要被听见</button>
+          <button id="tabPositive" class="tab-btn" type="button" role="tab" aria-selected="false" onclick="setEmotionGroup('positive', this)">值得被记住</button>
+        </div>
+
+        <div id="emotionGrid" class="emotion-grid" aria-live="polite"></div>
+
+        <div class="promise-row">
+          <div class="promise"><strong>慢慢说</strong>没有倒计时，也没有标准答案。</div>
+          <div class="promise"><strong>换个位置</strong>不是给建议，而是重新看见自己。</div>
+          <div class="promise"><strong>留在本地</strong>你的文字默认不会离开这台电脑。</div>
+        </div>
+
+        <div class="safety-note">
+          <strong>使用边界：</strong>这是一个自我表达与整理工具，不替代心理咨询、诊断或医疗服务。如果你正在经历强烈痛苦，或有伤害自己、伤害他人的风险，请立即联系可信赖的人、当地急救或报警服务，也可拨打全国统一心理援助热线 <strong>12356</strong>。
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section id="page-dialogue" class="page inner-page">
+    <header class="page-head">
+      <button class="back-btn" type="button" onclick="confirmLeaveDialogue()">← 返回选择</button>
+      <div class="stepper" aria-label="对话步骤">
+        <span id="stepOne" class="step-dot active">1</span><span class="step-line"></span><span id="stepTwo" class="step-dot">2</span>
+      </div>
+    </header>
+
+    <div class="dialogue-layout">
+      <section class="chair-room" aria-label="两把椅子的对话空间">
+        <div id="roomNote" class="room-note"></div>
+        <div class="chairs">
+          <div id="leftChair" class="chair-spot left active">
+            <div class="monster"><span id="leftMonsterIcon" class="monster-icon"></span><span id="leftMonsterName" class="monster-name"></span></div>
+            <span class="chair-icon">🪑</span>
+            <span class="chair-label">先在这里，把感受说出来</span>
+          </div>
+          <div id="rightChair" class="chair-spot right">
+            <div class="monster"><span id="rightMonsterIcon" class="monster-icon"></span><span id="rightMonsterName" class="monster-name"></span></div>
+            <span class="chair-icon">🪑</span>
+            <span class="chair-label">再坐到这里，回应刚才的自己</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="formPanel" class="form-panel"></section>
+    </div>
+  </section>
+
+  <section id="page-complete" class="page inner-page">
+    <header class="page-head">
+      <button class="back-btn" type="button" onclick="resetAndGoHome()">← 回到开始</button>
+      <div>
+        <h2>这次对话已经完成</h2>
+        <p>不必急着得出结论，看见本身就是一步。</p>
+      </div>
+    </header>
+    <div id="completeContent"></div>
+  </section>
+
+  <section id="page-history" class="page inner-page">
+    <header class="page-head">
+      <button class="back-btn" type="button" onclick="showPage('home')">← 回到首页</button>
+      <div>
+        <h2>我的对话记录</h2>
+        <p>记录只保存在当前浏览器中，你可以随时删除。</p>
+      </div>
+      <div class="head-actions">
+        <button class="ghost-btn" type="button" onclick="backupHistory()">备份记录</button>
+        <button class="ghost-btn" type="button" onclick="chooseBackupFile()">恢复备份</button>
+        <button class="ghost-btn danger-btn" type="button" onclick="clearHistory()">清空全部</button>
+      </div>
+    </header>
+    <div class="history-layout">
+      <div id="historyList" class="history-list"></div>
+      <div id="historyDetail" class="history-detail"></div>
+    </div>
+  </section>
+</main>
+
+<div id="notice" class="notice" role="status" aria-live="polite"></div>
+<input id="backupFileInput" type="file" accept="application/json,.json" hidden onchange="restoreHistory(event)">
+
+<div id="customEmotionModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="customEmotionTitle" onclick="closeCustomEmotionOnBackdrop(event)">
+  <section class="modal custom-emotion-modal">
+    <header class="modal-head">
+      <div>
+        <h2 id="customEmotionTitle">写下此刻的感受</h2>
+        <p>如果现有选项都不准确，就用你自己的词来命名它。</p>
+      </div>
+      <button class="icon-btn" type="button" aria-label="关闭自定义情绪" onclick="closeCustomEmotion()">×</button>
+    </header>
+    <form class="custom-emotion-form" onsubmit="submitCustomEmotion(event)">
+      <label for="customEmotionInput">这种感受叫什么？</label>
+      <input id="customEmotionInput" type="text" maxlength="12" autocomplete="off" placeholder="例如：委屈、迷茫、孤独、释然">
+      <p class="custom-emotion-examples">不用寻找最准确的答案，写下此刻最接近你的那个词就好。</p>
+      <div id="customEmotionStatus" class="form-status" role="alert"></div>
+      <div class="custom-emotion-actions">
+        <button class="text-btn" type="button" onclick="closeCustomEmotion()">取消</button>
+        <button class="primary-btn" type="submit">从这里开始</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div id="theoryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="theoryTitle" onclick="closeTheoryOnBackdrop(event)">
+  <section class="modal">
+    <header class="modal-head">
+      <div>
+        <h2 id="theoryTitle">为什么是两把空椅子？</h2>
+        <p>了解练习的来处，也知道它的边界。</p>
+      </div>
+      <button class="icon-btn" type="button" aria-label="关闭介绍" onclick="closeTheory()">×</button>
+    </header>
+
+    <p class="theory-intro">空椅子技术源自格式塔疗法。练习者面对一把空椅子，想象某个人、某种情绪，或另一个自己坐在那里，把原本留在心里的话说出来；随后交换位置，从另一个角度重新回应。</p>
+
+    <div class="theory-steps">
+      <div class="theory-step"><span>01 · 表达</span><strong>把内在感受放到眼前</strong><p>先不分析、不压抑，只把发生的事、感受与期待说清楚。</p></div>
+      <div class="theory-step"><span>02 · 换位</span><strong>从原来的位置离开一下</strong><p>换到对面的椅子，给自己创造一个新的观察角度。</p></div>
+      <div class="theory-step"><span>03 · 回应</span><strong>像回应在意的人那样回应自己</strong><p>不是寻找标准答案，而是听见此前容易被忽略的声音。</p></div>
+    </div>
+
+    <div class="boundary-grid">
+      <div class="boundary-card"><strong>这个工具可以做什么</strong>提供一个轻量、安静的表达结构，帮助你整理当下感受，进行一次与自己的对话。</div>
+      <div class="boundary-card warning"><strong>这个工具不能做什么</strong>它不进行心理诊断，不提供治疗或专业建议，也不能替代心理咨询与医疗服务。</div>
+    </div>
+
+    <div class="privacy-list">
+      <strong>关于隐私和记录：</strong>工具无需登录，不联网上传你的对话。记录保存在当前浏览器的本地存储中。移动 HTML 文件、更换浏览器或清理浏览器数据后，记录可能无法继续读取；重要内容请及时在“我的对话记录”中备份。
+    </div>
+  </section>
+</div>
+
+<script>
+  const STORAGE_KEY = "empty_chair_history";
+  const CUSTOM_EMOTION_ID = "custom";
+  const CUSTOM_EMOTION_ICON = "💭";
+  const CUSTOM_EMOTION_COLOR = "#9a654d";
+  const CUSTOM_EMOTION_SOFT = "#eee0d8";
+
+  const EMOTIONS = {
+    negative: [
+      { id: "angry", icon: "😤", name: "生气", desc: "心里有一股火", color: "#b85b3b", soft: "#f3ddd2" },
+      { id: "worried", icon: "😰", name: "担心", desc: "脑子里停不下来", color: "#826b95", soft: "#ebe4ef" },
+      { id: "sad", icon: "😢", name: "难过", desc: "想让眼泪待一会儿", color: "#557c9f", soft: "#dfe9f0" },
+      { id: "nervous", icon: "😨", name: "紧张", desc: "身体已经绷紧了", color: "#63846c", soft: "#e1ebe3" }
+    ],
+    positive: [
+      { id: "happy", icon: "😊", name: "开心", desc: "想把这一刻留下", color: "#b87538", soft: "#f3e6d2" },
+      { id: "brave", icon: "🦁", name: "勇敢", desc: "害怕，但还是迈出了一步", color: "#8b6747", soft: "#eee4da" },
+      { id: "proud", icon: "🌟", name: "自豪", desc: "想认真肯定自己", color: "#a67837", soft: "#f2e6ce" },
+      { id: "excited", icon: "🔭", name: "期待", desc: "心已经向前走了", color: "#667f7b", soft: "#e0eae8" }
+    ]
+  };
+
+  const PHRASES = {
+    angry: {
+      opening: "你可以把那股火先放在这里。发生了什么？",
+      listening: "不着急，把让你生气的部分说完整。",
+      switchChair: "现在，坐到对面的椅子上。听见刚才那些话，你想怎样回应自己？"
+    },
+    worried: {
+      opening: "那些反复出现的担心，可以先说出来给自己听听。",
+      listening: "慢慢说。你最担心发生的是什么？",
+      switchChair: "现在，坐到对面的椅子上。面对这些担心，你想怎样陪伴自己？"
+    },
+    sad: {
+      opening: "没关系，这里不用急着振作。你可以先说说发生了什么。",
+      listening: "让难过待一会儿，也把它的原因说出来。",
+      switchChair: "现在，坐到对面的椅子上。看着难过的自己，你最想对自己说什么？"
+    },
+    nervous: {
+      opening: "先慢一点。你不需要立刻解决它，只要说说你正在紧张什么。",
+      listening: "身体绷紧了也没关系，把心里的声音说出来。",
+      switchChair: "现在，坐到对面的椅子上。你想怎样让紧张的自己安心一点？"
+    },
+    happy: {
+      opening: "好的感受也值得被认真听见。什么让你这么开心？",
+      listening: "把那些让你开心的细节留下来。",
+      switchChair: "现在，坐到对面的椅子上。你想怎样记住和延续这份开心？"
+    },
+    brave: {
+      opening: "勇敢不是不害怕。说说你带着害怕完成了什么。",
+      listening: "那一步可能比别人看到的更难。",
+      switchChair: "现在，坐到对面的椅子上。你想怎样肯定那个勇敢的自己？"
+    },
+    proud: {
+      opening: "不用谦虚这一会儿。你做到了什么，值得自己认真肯定？",
+      listening: "这不是炫耀，是看见自己的付出。",
+      switchChair: "现在，坐到对面的椅子上。你想把怎样的肯定送给自己？"
+    },
+    excited: {
+      opening: "期待会让人提前看见未来。你正在期待什么？",
+      listening: "把你想象中的那一刻说出来。",
+      switchChair: "现在，坐到对面的椅子上。你想提醒期待中的自己什么？"
+    },
+    custom: {
+      opening: "这种感受值得被你认真听见。发生了什么？",
+      listening: "不用急着解释或判断，试着把这种感受说完整。",
+      switchChair: "现在，坐到对面的椅子上。听见刚才那些话，你想怎样回应自己？"
+    }
+  };
+
+  let emotionGroup = "negative";
+  let currentEmotion = null;
+  let dialogueStep = 1;
+  let expressionMode = "template";
+  let currentHistoryId = null;
+  let expressionDraft = { because: "", feel: "", hope: "", freeText: "" };
+  let responseDraft = "";
+  let lastSavedId = null;
+  let noticeTimer = null;
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function allEmotions() {
+    return [...EMOTIONS.negative, ...EMOTIONS.positive];
+  }
+
+  function findEmotion(id) {
+    return allEmotions().find((emotion) => emotion.id === id);
+  }
+
+  function buildCustomEmotion(name) {
+    return {
+      id: CUSTOM_EMOTION_ID,
+      icon: CUSTOM_EMOTION_ICON,
+      name,
+      desc: "这是你此刻的感受",
+      color: CUSTOM_EMOTION_COLOR,
+      soft: CUSTOM_EMOTION_SOFT
+    };
+  }
+
+  function showNotice(message) {
+    const notice = document.getElementById("notice");
+    notice.textContent = message;
+    notice.classList.add("show");
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => notice.classList.remove("show"), 2200);
+  }
+
+  function openTheory() {
+    document.getElementById("theoryModal").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeTheory() {
+    document.getElementById("theoryModal").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function closeTheoryOnBackdrop(event) {
+    if (event.target.id === "theoryModal") closeTheory();
+  }
+
+  function openCustomEmotion() {
+    const input = document.getElementById("customEmotionInput");
+    input.value = "";
+    document.getElementById("customEmotionStatus").textContent = "";
+    document.getElementById("customEmotionModal").classList.add("open");
+    document.body.style.overflow = "hidden";
+    window.setTimeout(() => input.focus(), 0);
+  }
+
+  function closeCustomEmotion() {
+    document.getElementById("customEmotionModal").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function closeCustomEmotionOnBackdrop(event) {
+    if (event.target.id === "customEmotionModal") closeCustomEmotion();
+  }
+
+  function submitCustomEmotion(event) {
+    event.preventDefault();
+    const input = document.getElementById("customEmotionInput");
+    const name = input.value.trim().replace(/\s+/g, " ").slice(0, 12);
+    if (!name) {
+      document.getElementById("customEmotionStatus").textContent = "请先写下一个最接近此刻感受的词。";
+      input.focus();
+      return;
+    }
+    closeCustomEmotion();
+    startDialogue(buildCustomEmotion(name));
+  }
+
+  function showPage(id) {
+    document.querySelectorAll(".page").forEach((page) => page.classList.remove("active"));
+    document.getElementById(`page-${id}`).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "auto" });
+    if (id === "home") updateHistoryCount();
+  }
+
+  function setEmotionGroup(group, button) {
+    emotionGroup = group;
+    document.querySelectorAll(".emotion-tabs .tab-btn").forEach((tab) => {
+      tab.classList.remove("active");
+      tab.setAttribute("aria-selected", "false");
+    });
+    button.classList.add("active");
+    button.setAttribute("aria-selected", "true");
+    renderEmotions();
+  }
+
+  function renderEmotions() {
+    const grid = document.getElementById("emotionGrid");
+    const emotionCards = EMOTIONS[emotionGroup].map((emotion) => `
+      <button class="emotion-card" type="button" style="--emotion:${emotion.color};--emotion-soft:${emotion.soft}" onclick="selectEmotion('${emotion.id}')">
+        <span class="emotion-icon">${emotion.icon}</span>
+        <span class="emotion-name">${emotion.name}</span>
+        <span class="emotion-desc">${emotion.desc}</span>
+      </button>
+    `).join("");
+    grid.innerHTML = `${emotionCards}
+      <button class="emotion-card custom-emotion-card" type="button" style="--emotion:${CUSTOM_EMOTION_COLOR};--emotion-soft:${CUSTOM_EMOTION_SOFT}" onclick="openCustomEmotion()">
+        <span class="emotion-icon">${CUSTOM_EMOTION_ICON}</span>
+        <span>
+          <span class="emotion-name">没有合适的？写下自己的感受</span>
+          <span class="emotion-desc">用你自己的词，命名此刻正在发生的情绪。</span>
+        </span>
+        <span class="custom-emotion-arrow" aria-hidden="true">→</span>
+      </button>`;
+  }
+
+  function selectEmotion(id) {
+    startDialogue(findEmotion(id));
+  }
+
+  function startDialogue(emotion) {
+    if (!emotion) return;
+    currentEmotion = emotion;
+    dialogueStep = 1;
+    expressionMode = "template";
+    expressionDraft = { because: "", feel: "", hope: "", freeText: "" };
+    responseDraft = "";
+    renderDialogue();
+    showPage("dialogue");
+  }
+
+  function renderDialogue() {
+    const phrase = PHRASES[currentEmotion.id];
+    const isExpression = dialogueStep === 1;
+    document.getElementById("stepOne").classList.toggle("active", isExpression);
+    document.getElementById("stepTwo").classList.toggle("active", !isExpression);
+    document.getElementById("leftChair").classList.toggle("active", isExpression);
+    document.getElementById("rightChair").classList.toggle("active", !isExpression);
+    document.getElementById("leftMonsterIcon").textContent = currentEmotion.icon;
+    document.getElementById("rightMonsterIcon").textContent = currentEmotion.icon;
+    document.getElementById("leftMonsterName").textContent = `${currentEmotion.name}的你`;
+    document.getElementById("rightMonsterName").textContent = "回应自己的你";
+    document.getElementById("roomNote").textContent = isExpression ? phrase.opening : phrase.switchChair;
+
+    if (isExpression) renderExpressionForm();
+    else renderResponseForm();
+  }
+
+  function renderExpressionForm() {
+    const phrase = PHRASES[currentEmotion.id];
+    document.getElementById("formPanel").innerHTML = `
+      <p class="form-kicker">STEP 01 · 表达</p>
+      <h3>先把感受说完整</h3>
+      <p class="form-guide">${escapeHtml(phrase.listening)} 你可以跟着句子写，也可以自由表达。</p>
+      <div class="mode-tabs" role="tablist" aria-label="表达方式">
+        <button class="tab-btn ${expressionMode === "template" ? "active" : ""}" type="button" onclick="switchExpressionMode('template', this)">跟着句子写</button>
+        <button class="tab-btn ${expressionMode === "free" ? "active" : ""}" type="button" onclick="switchExpressionMode('free', this)">自由写下来</button>
+      </div>
+      <div id="expressionFields"></div>
+      <div id="formStatus" class="form-status" role="alert"></div>
+      <div class="form-actions">
+        <button class="text-btn" type="button" onclick="clearExpression()">清空这一页</button>
+        <button class="primary-btn" type="button" onclick="submitExpression()">说完了，换把椅子 →</button>
+      </div>
+    `;
+    renderExpressionFields();
+  }
+
+  function renderExpressionFields() {
+    const fields = document.getElementById("expressionFields");
+    if (expressionMode === "template") {
+      fields.innerHTML = `
+        <div class="template-fields">
+          <div class="field-row"><label for="becauseInput">因为</label><textarea id="becauseInput" rows="2" placeholder="发生了什么？">${escapeHtml(expressionDraft.because)}</textarea></div>
+          <div class="field-row"><label for="feelInput">我感觉</label><textarea id="feelInput" rows="2" placeholder="此刻是什么感受？">${escapeHtml(expressionDraft.feel)}</textarea></div>
+          <div class="field-row"><label for="hopeInput">我希望</label><textarea id="hopeInput" rows="2" placeholder="你真正希望的是什么？">${escapeHtml(expressionDraft.hope)}</textarea></div>
+        </div>
+      `;
+    } else {
+      fields.innerHTML = `<textarea id="freeTextInput" class="free-textarea" placeholder="想说什么都可以。这里没有标准答案。">${escapeHtml(expressionDraft.freeText)}</textarea>`;
+    }
+  }
+
+  function captureExpressionDraft() {
+    if (expressionMode === "template") {
+      expressionDraft.because = document.getElementById("becauseInput")?.value.trim() || "";
+      expressionDraft.feel = document.getElementById("feelInput")?.value.trim() || "";
+      expressionDraft.hope = document.getElementById("hopeInput")?.value.trim() || "";
+    } else {
+      expressionDraft.freeText = document.getElementById("freeTextInput")?.value.trim() || "";
+    }
+  }
+
+  function switchExpressionMode(mode, button) {
+    captureExpressionDraft();
+    expressionMode = mode;
+    document.querySelectorAll(".mode-tabs .tab-btn").forEach((tab) => tab.classList.remove("active"));
+    button.classList.add("active");
+    renderExpressionFields();
+  }
+
+  function clearExpression() {
+    expressionDraft = { because: "", feel: "", hope: "", freeText: "" };
+    renderExpressionFields();
+    showNotice("这一页已经清空");
+  }
+
+  function expressionIsEmpty() {
+    return !expressionDraft.because && !expressionDraft.feel && !expressionDraft.hope && !expressionDraft.freeText;
+  }
+
+  function submitExpression() {
+    captureExpressionDraft();
+    if (expressionIsEmpty()) {
+      document.getElementById("formStatus").textContent = "不用写很多，但请先留下一句话，再换到对面的椅子。";
+      return;
+    }
+    dialogueStep = 2;
+    renderDialogue();
+  }
+
+  function expressionSummary() {
+    if (expressionDraft.freeText) return expressionDraft.freeText;
+    return [
+      expressionDraft.because ? `因为 ${expressionDraft.because}` : "",
+      expressionDraft.feel ? `我感觉 ${expressionDraft.feel}` : "",
+      expressionDraft.hope ? `我希望 ${expressionDraft.hope}` : ""
+    ].filter(Boolean).join("；");
+  }
+
+  function renderResponseForm() {
+    document.getElementById("formPanel").innerHTML = `
+      <p class="form-kicker">STEP 02 · 回应</p>
+      <h3>现在，从对面看看自己</h3>
+      <p class="form-guide">不用分析，也不用讲大道理。像对待一个你在意的人那样，回应刚才的自己。</p>
+      <div class="recap"><strong>刚才的你说：</strong><br>${escapeHtml(expressionSummary())}</div>
+      <label class="quote-label" for="responseInput">你想对刚才的自己说什么？</label>
+      <textarea id="responseInput" class="free-textarea" placeholder="我听见了…… / 你已经很努力了…… / 我们可以慢一点……">${escapeHtml(responseDraft)}</textarea>
+      <div id="formStatus" class="form-status" role="alert"></div>
+      <div class="form-actions">
+        <button class="text-btn" type="button" onclick="backToExpression()">← 回去补充</button>
+        <button class="primary-btn" type="button" onclick="submitResponse()">完成这次对话</button>
+      </div>
+    `;
+  }
+
+  function backToExpression() {
+    responseDraft = document.getElementById("responseInput")?.value.trim() || "";
+    dialogueStep = 1;
+    renderDialogue();
+  }
+
+  function submitResponse() {
+    responseDraft = document.getElementById("responseInput")?.value.trim() || "";
+    if (!responseDraft) {
+      document.getElementById("formStatus").textContent = "请先给刚才的自己留下一句话。";
+      return;
+    }
+    lastSavedId = saveToHistory();
+    renderCompletePage();
+    showPage("complete");
+  }
+
+  function normalizeRecord(record) {
+    if (!record || typeof record !== "object") return null;
+    const customName = typeof record.emotionName === "string" ? record.emotionName.trim().slice(0, 12) : "";
+    const emotion = record.emotionId === CUSTOM_EMOTION_ID && customName
+      ? buildCustomEmotion(customName)
+      : findEmotion(record.emotionId);
+    if (!emotion || typeof record.id !== "string" || !/^[a-z0-9-]+$/i.test(record.id)) return null;
+    if (!record.expression || typeof record.expression !== "object") return null;
+    if (!record.response || typeof record.response.text !== "string") return null;
+    const stringField = (value) => typeof value === "string" ? value : "";
+    const date = new Date(record.date);
+    return {
+      id: record.id,
+      emotionId: emotion.id,
+      emotionName: emotion.name,
+      emotionIcon: emotion.icon,
+      emotionColor: emotion.color,
+      date: Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString(),
+      expression: {
+        because: stringField(record.expression.because),
+        feel: stringField(record.expression.feel),
+        hope: stringField(record.expression.hope),
+        freeText: stringField(record.expression.freeText)
+      },
+      response: { text: record.response.text },
+      stars: Number.isInteger(record.stars) ? Math.min(3, Math.max(0, record.stars)) : 0
+    };
+  }
+
+  function getHistory() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      return Array.isArray(parsed) ? parsed.map(normalizeRecord).filter(Boolean) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function setHistory(history) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      updateHistoryCount();
+      return true;
+    } catch {
+      showNotice("浏览器未能保存记录，请检查本地存储设置");
+      return false;
+    }
+  }
+
+  function saveToHistory() {
+    const history = getHistory();
+    const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    history.unshift({
+      id,
+      emotionId: currentEmotion.id,
+      emotionName: currentEmotion.name,
+      emotionIcon: currentEmotion.icon,
+      emotionColor: currentEmotion.color,
+      date: new Date().toISOString(),
+      expression: { ...expressionDraft },
+      response: { text: responseDraft },
+      stars: 0
+    });
+    setHistory(history);
+    return id;
+  }
+
+  function updateHistoryCount() {
+    const count = getHistory().length;
+    document.getElementById("historyCount").textContent = count ? `(${count})` : "";
+  }
+
+  function rateStars(n) {
+    const history = getHistory();
+    const record = history.find((item) => item.id === lastSavedId);
+    if (!record) return;
+    record.stars = n;
+    setHistory(history);
+    renderStars(n);
+    showNotice("已记录这次对话的感受");
+  }
+
+  function renderStars(selected) {
+    const stars = document.getElementById("starRating");
+    if (!stars) return;
+    stars.innerHTML = [1, 2, 3].map((n) => `
+      <button class="star-btn ${n <= selected ? "selected" : ""}" type="button" aria-label="${n}星" onclick="rateStars(${n})">${n <= selected ? "★" : "☆"}</button>
+    `).join("");
+  }
+
+  function renderCompletePage() {
+    document.getElementById("completeContent").innerHTML = `
+      <div class="complete-layout">
+        <section class="complete-hero">
+          <div class="complete-icon">${currentEmotion.icon}</div>
+          <h3>你换了一个位置，<br>重新看见了自己。</h3>
+          <p>这次对话已经保存在当前浏览器中。你可以稍后回来看看，也可以随时删除。</p>
+        </section>
+        <section class="complete-card">
+          <span class="quote-label">你给自己的回应</span>
+          <div class="response-quote">“${escapeHtml(responseDraft)}”</div>
+          <div class="rating">
+            <p>这次换位，对你有一点启发吗？</p>
+            <div id="starRating" class="stars"></div>
+          </div>
+          <div class="complete-actions">
+            <button class="primary-btn" type="button" onclick="resetAndGoHome()">再进行一次</button>
+            <button class="ghost-btn" type="button" onclick="showHistory('${lastSavedId}')">查看这次记录</button>
+          </div>
+        </section>
+      </div>
+    `;
+    renderStars(0);
+  }
+
+  function showHistory(preferredId) {
+    const history = getHistory();
+    currentHistoryId = preferredId || currentHistoryId || history[0]?.id || null;
+    renderHistory();
+    showPage("history");
+  }
+
+  function renderHistory() {
+    const history = getHistory();
+    const list = document.getElementById("historyList");
+    if (!history.length) {
+      currentHistoryId = null;
+      list.innerHTML = `<div class="detail-empty"><div><div style="font-size:48px">🪑</div><p>还没有对话记录</p></div></div>`;
+      renderHistoryDetail();
+      return;
+    }
+    if (!history.some((item) => item.id === currentHistoryId)) currentHistoryId = history[0].id;
+    list.innerHTML = history.map((item) => {
+      const preview = item.expression?.freeText || item.expression?.because || "一次与自己的对话";
+      return `
+        <button class="history-item ${item.id === currentHistoryId ? "active" : ""}" type="button" onclick="selectHistory('${item.id}')">
+          <span class="history-item-head">
+            <span class="history-item-icon">${escapeHtml(item.emotionIcon)}</span>
+            <span class="history-item-name">${escapeHtml(item.emotionName)}的对话</span>
+            <span class="history-item-date">${escapeHtml(formatDate(item.date, false))}</span>
+          </span>
+          <span class="history-preview">${escapeHtml(preview.slice(0, 54))}${preview.length > 54 ? "…" : ""}</span>
+        </button>
+      `;
+    }).join("");
+    renderHistoryDetail();
+  }
+
+  function selectHistory(id) {
+    currentHistoryId = id;
+    renderHistory();
+  }
+
+  function renderHistoryDetail() {
+    const detail = document.getElementById("historyDetail");
+    const item = getHistory().find((record) => record.id === currentHistoryId);
+    if (!item) {
+      detail.innerHTML = `<div class="detail-empty"><div><div style="font-size:48px">🪑</div><p>选择一条记录，在这里回看。</p></div></div>`;
+      return;
+    }
+    const expression = item.expression?.freeText || [
+      item.expression?.because ? `因为 ${item.expression.because}` : "",
+      item.expression?.feel ? `我感觉 ${item.expression.feel}` : "",
+      item.expression?.hope ? `我希望 ${item.expression.hope}` : ""
+    ].filter(Boolean).join("；");
+    const stars = `${"★".repeat(item.stars || 0)}${"☆".repeat(3 - (item.stars || 0))}`;
+    detail.innerHTML = `
+      <div class="detail-head">
+        <span class="detail-icon">${escapeHtml(item.emotionIcon)}</span>
+        <div><div class="detail-name">${escapeHtml(item.emotionName)}的对话</div><div class="detail-date">${escapeHtml(formatDate(item.date, true))}</div></div>
+        <div class="detail-stars">${stars}</div>
+      </div>
+      <div class="detail-block"><span>那时的你说</span><p>${escapeHtml(expression)}</p></div>
+      <div class="detail-block"><span>你给自己的回应</span><p>${escapeHtml(item.response?.text || "")}</p></div>
+      <div class="detail-actions">
+        <button class="ghost-btn" type="button" onclick="exportHistoryText('${item.id}')">导出为文本</button>
+        <button class="ghost-btn danger-btn" type="button" onclick="deleteHistory('${item.id}')">删除这条记录</button>
+      </div>
+    `;
+  }
+
+  function deleteHistory(id) {
+    if (!window.confirm("确定删除这条对话记录吗？删除后无法恢复。")) return;
+    const history = getHistory().filter((item) => item.id !== id);
+    setHistory(history);
+    currentHistoryId = history[0]?.id || null;
+    renderHistory();
+    showNotice("这条记录已删除");
+  }
+
+  function clearHistory() {
+    const history = getHistory();
+    if (!history.length) {
+      showNotice("目前没有可以清空的记录");
+      return;
+    }
+    if (!window.confirm("确定清空全部对话记录吗？清空后无法恢复。")) return;
+    setHistory([]);
+    currentHistoryId = null;
+    renderHistory();
+    showNotice("全部记录已清空");
+  }
+
+  function downloadFile(name, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function safeFileDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "未知日期";
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
+  function safeFileNamePart(value) {
+    return String(value ?? "")
+      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "")
+      .trim()
+      .slice(0, 20) || "自定义感受";
+  }
+
+  function exportHistoryText(id) {
+    const item = getHistory().find((record) => record.id === id);
+    if (!item) return;
+    const expression = item.expression?.freeText || [
+      item.expression?.because ? `因为：${item.expression.because}` : "",
+      item.expression?.feel ? `我感觉：${item.expression.feel}` : "",
+      item.expression?.hope ? `我希望：${item.expression.hope}` : ""
+    ].filter(Boolean).join("\r\n");
+    const text = [
+      "空椅子 · 一次与自己的对话",
+      "",
+      `时间：${formatDate(item.date, true)}`,
+      `感受：${item.emotionName}`,
+      "",
+      "那时的我说：",
+      expression,
+      "",
+      "我给自己的回应：",
+      item.response?.text || "",
+      "",
+      "—— 由「空椅子」单页工具记录"
+    ].join("\r\n");
+    downloadFile(`空椅子-${safeFileDate(item.date)}-${safeFileNamePart(item.emotionName)}.txt`, text, "text/plain;charset=utf-8");
+    showNotice("这次对话已导出为文本");
+  }
+
+  function backupHistory() {
+    const history = getHistory();
+    if (!history.length) {
+      showNotice("目前没有可以备份的记录");
+      return;
+    }
+    const payload = {
+      app: "空椅子",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      records: history
+    };
+    downloadFile(`空椅子记录备份-${safeFileDate(new Date())}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+    showNotice("全部记录已备份");
+  }
+
+  function chooseBackupFile() {
+    document.getElementById("backupFileInput").click();
+  }
+
+  async function restoreHistory(event) {
+    const input = event.target;
+    const file = input.files?.[0];
+    input.value = "";
+    if (!file) return;
+    try {
+      const payload = JSON.parse(await file.text());
+      const records = Array.isArray(payload) ? payload : payload.records;
+      if (!Array.isArray(records)) throw new Error("invalid");
+      const valid = records.map(normalizeRecord).filter(Boolean);
+      if (!valid.length && records.length) throw new Error("invalid");
+      if (!window.confirm(`备份中包含 ${valid.length} 条记录。恢复后将替换当前记录，是否继续？`)) return;
+      setHistory(valid);
+      currentHistoryId = valid[0]?.id || null;
+      renderHistory();
+      showNotice("记录已从备份恢复");
+    } catch {
+      showNotice("无法读取这份备份，请选择由空椅子导出的 JSON 文件");
+    }
+  }
+
+  function formatDate(value, includeYear) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "时间未知";
+    const datePart = includeYear
+      ? `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+      : `${date.getMonth() + 1}月${date.getDate()}日`;
+    return `${datePart} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  }
+
+  function confirmLeaveDialogue() {
+    captureExpressionDraft();
+    if (!expressionIsEmpty() || responseDraft) {
+      if (!window.confirm("返回后，本次尚未完成的内容不会保存。确定返回吗？")) return;
+    }
+    resetAndGoHome();
+  }
+
+  function resetAndGoHome() {
+    currentEmotion = null;
+    dialogueStep = 1;
+    expressionMode = "template";
+    expressionDraft = { because: "", feel: "", hope: "", freeText: "" };
+    responseDraft = "";
+    showPage("home");
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && document.getElementById("customEmotionModal").classList.contains("open")) {
+      closeCustomEmotion();
+      return;
+    }
+    if (event.key === "Escape" && document.getElementById("theoryModal").classList.contains("open")) {
+      closeTheory();
+      return;
+    }
+    if (event.key === "Escape" && document.getElementById("page-dialogue").classList.contains("active")) {
+      confirmLeaveDialogue();
+    }
+  });
+
+  renderEmotions();
+  updateHistoryCount();
+</script>
+</body>
+</html>
+

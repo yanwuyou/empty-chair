@@ -1,0 +1,14 @@
+{
+  "title": "空椅子｜给自己一段不被打断的对话",
+  "hasTheory": true,
+  "hasSafety": true,
+  "hasLocalPrivacy": true,
+  "responseStepRendered": true,
+  "onCompletePage": true,
+  "historySaved": true,
+  "injectionSafe": true,
+  "noOverflow1024": true,
+  "noOverflow760": true,
+  "consoleErrors": [],
+  "passed": true
+}
